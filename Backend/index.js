@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
-const User = require("../Backend/models/usermodel");
+const User = require("./models/usermodel");
 const Note = require("./models/notesmodel");
 const session = require('express-session');
 const cors = require('cors')
@@ -38,7 +38,6 @@ async function main() {
     });
 }
 main()
-
 
 
 // Basic route
