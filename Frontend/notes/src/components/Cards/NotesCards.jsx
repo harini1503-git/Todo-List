@@ -13,9 +13,9 @@ const NotesCards = ({ title, date, content, onEdit, onDelete }) => {
                             </div>
                             <span>{date}</span>
                             <p className="card-text">{content}</p>
-                            <button type='submit' className="btn btn-primary"><MdEdit onChange={onEdit} /></button>
+                            <button type='submit' className="btn btn-primary"><MdEdit onClick={onEdit} /></button>
                             &nbsp; &nbsp;
-                            <button type='submit' className="btn btn-danger"><MdDelete onChange={onDelete} /></button>
+                            <button type='submit' className="btn btn-danger"><MdDelete onClick={onDelete} /></button>
 
                         </div>
                     </div>

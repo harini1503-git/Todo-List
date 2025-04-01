@@ -12,7 +12,7 @@ const AddEditNotes = ({ notedata, getAllNotes, type, onclose }) => {
     try {
       const response = await axiosInstance.post("/add-note", { title, content });
       console.log(response);
-      if (response.data && response.data.notes) {
+      if (response.data && response.data.note) {
         getAllNotes();
         onclose();
       }
@@ -28,18 +28,17 @@ const AddEditNotes = ({ notedata, getAllNotes, type, onclose }) => {
   // Edit an existing note (PUT request)
   const editNote = async () => {
     const noteId = notedata._id;
+    // console.log(noteId);
     try {
       const response = await axiosInstance.put(`/edit-note/${noteId}`, { title, content });
+      console.log(response);
       if (response.data && response.data.note) {
         getAllNotes();
         onclose();
       }
     } catch (error) {
-      if (error.response && error.response.data && error.response.data.message) {
-        setError(error.response.data.message);
-      } else {
-        setError("An error occurred while editing the note.");
-      }
+      console.error("Error during edit note operation:", error);  // Log full error to inspect
+      setError("An error occurred while editing the note.");
     }
   };
 

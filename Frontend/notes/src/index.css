@@ -126,8 +126,11 @@ nav {
 }
 
 .container-main {
-  width: 90%;
+  width: 100%;
   display: flex;
+  justify-content:flex-start;
+  align-items: flex-start;
+  flex-wrap: wrap;
 }
 
 .btn-circle.btn-xl {

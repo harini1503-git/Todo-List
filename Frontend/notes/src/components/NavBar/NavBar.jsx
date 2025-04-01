@@ -15,7 +15,7 @@ const NavBar = ({userinfo}) => {
             <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-lg">
                 <div className="container">
                     <a className="navbar-brand" href="#">Todo - List</a>
-                    <ProfileInfo userinfo={userinfo} OnLogout={OnLogout} />
+                    {userinfo && <ProfileInfo userinfo={userinfo} OnLogout={OnLogout} />}
                 </div>
             </nav>
         </>

@@ -130,14 +130,15 @@ app.post("/add-note", isAuthenticated, async (req, res) => {
 // Edit note
 app.put("/edit-note/:noteId", isAuthenticated, async (req, res) => {
     const noteId = req.params.noteId;
+    console.log(req.session.id)
     const { title, content } = req.body;
 
     if (!title && !content) return res.status(400).json({ error: true, message: "No changes provided" });
 
     try {
-        const note = await Note.findOne({ _id: noteId, userId: req.session.id });
+        const note = await Note.findOneAndUpdate({ _id: noteId }, { title, content },{ new: true });
         if (!note) return res.status(404).json({ error: true, message: "Note not found!" });
-
+        // console.log(note);
         if (title) note.title = title;
         if (content) note.content = content;
 
@@ -163,10 +164,9 @@ app.delete("/delete-note/:noteId", isAuthenticated, async (req, res) => {
     const noteId = req.params.noteId;
 
     try {
-        const note = await Note.findOne({ _id: noteId, userId: req.session.id });
-        if (!note) return res.status(404).json({ error: true, message: "Note Not Found!" });
+        await Note.findOneAndDelete({ _id: noteId});
 
-        await Note.deleteOne({ _id: noteId, userId: req.session.id });
+        // await Note.deleteOne({ _id: noteId, userId: req.session.id });
         return res.json({ error: false, message: "Note Deleted Successfully!" });
     } catch (error) {
         return res.status(500).json({ error: true, message: "Internal Server Error!" });

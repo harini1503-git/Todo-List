@@ -31,7 +31,7 @@ const Home = () => {
   };
 
   // Fetch all notes
-  const getAllNotes= async () => {
+  const getAllNotes = async () => {
     try {
       const response = await axiosInstance.get("/get-all-note");
       if (response.data && response.data.notes) {
@@ -46,7 +46,9 @@ const Home = () => {
   const deleteNote = async (data) => {
     const noteId = data._id;
     try {
+      console.log("Inside Delete note frontend")
       const response = await axiosInstance.delete(`/delete-note/${noteId}`);
+      console.log(response);
       if (response.data && !response.data.error) {
         getAllNotes(); // Refresh notes list after deletion
       }
@@ -93,7 +95,9 @@ const Home = () => {
         className="custom-class"
       >
         <AddEditNotes
-          onclose={() => setOpenAddEditModal({ isShowen: false, type: "add", data: null })}
+          onclose={() => {
+            setOpenAddEditModal({ isShowen: false, type: "add", data: null })}
+          }
           type={openAddEditModal.type}
           notedata={openAddEditModal.data}
           getAllNotes={getAllNotes}
