@@ -4,6 +4,7 @@ import '../../index.css';
 import { validEmail } from '../../utils/helper';
 import axiosInstance from '../../utils/axiosInstance';
 import { useNavigate } from 'react-router-dom';
+import { useAppContext } from '../../context/AppContext';
 
 const Login = () => {
   const [Email, setEmail] = useState('');
@@ -41,7 +42,7 @@ const Login = () => {
     } catch (error) {
       console.log("error", error)
       if (error.response && error.response.data && error.response.data.message) {
-        setError(error.response.data.message); 
+        setError(error.response.data.message);
       } else {
         setError('An unexpected error occurred. Please try again.');
       }
@@ -56,7 +57,7 @@ const Login = () => {
           <form onSubmit={handleLogin}>
             <h2>LogIn Page</h2>
 
-            
+
             <div className='form-group'>
               <label htmlFor='exampleInputEmail1' style={{ fontSize: '20px', display: 'flex', alignItems: 'start' }}>
                 Email address

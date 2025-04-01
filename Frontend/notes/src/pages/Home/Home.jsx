@@ -7,11 +7,13 @@ import NotesCards from '../../components/Cards/NotesCards'; // Assuming NotesCar
 import AddEditNotes from './AddEditNotes'
 import NavBar from '../../components/NavBar/NavBar';
 import { useNavigate } from 'react-router-dom';
+import { useAppContext } from '../../context/AppContext';
 
 const Home = () => {
+  const { setUser} = useAppContext();
+
   const [AllNotes, setAllNotes] = useState([]);
   const [openAddEditModal, setOpenAddEditModal] = useState({ isShowen: false, type: 'add', data: null });
-  const [user, setUser] = useState(null);
   const [status, setStatus] = useState("pending");
 
   const navigate = useNavigate();
@@ -89,7 +91,7 @@ const Home = () => {
 
   return (
     <>
-      <NavBar userinfo={user} />
+      <NavBar />
       <div className="container">
         <h4>Notes</h4>
 
@@ -143,21 +145,6 @@ const Home = () => {
               ))}
             </div>
           </div>
-
-          {/* <div className="tab-pane fade" id="done" role="tabpanel" aria-labelledby="done-tab">
-            <div className="container-main">
-              {AllNotes.filter(note => note.status === 'done').map((item) => (
-                <NotesCards
-                  key={item._id}
-                  title={item.title}
-                  date={moment(item.createdOn).format('DD MMM YYYY')}
-                  content={item.content}
-                  checkboxChecked={item.status === 'done'}
-                  onCheckboxChange={() => toggleTaskStatus(item._id, item.status)}
-                />
-              ))}
-            </div>
-          </div> */}
         </div>
 
         <button

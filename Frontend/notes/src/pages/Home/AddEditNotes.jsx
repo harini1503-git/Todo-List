@@ -5,7 +5,7 @@ import axiosInstance from '../../utils/axiosInstance';
 const AddEditNotes = ({ notedata, getAllNotes, type, onclose }) => {
   const [title, setTitle] = useState(notedata?.title || "");
   const [content, setContent] = useState(notedata?.content || "");
-  const [error, setError] = useState(null);
+  const [Error, setError] = useState(null);
 
   // Add a new note (POST request)
   const addNewNote = async () => {
@@ -16,11 +16,11 @@ const AddEditNotes = ({ notedata, getAllNotes, type, onclose }) => {
         getAllNotes();
         onclose();
       }
-    } catch (error) {
-      if (error.response && error.response.data && error.response.data.message) {
-        setError(error.response.data.message);
+    } catch (Error) {
+      if (Error.response && Error.response.data && Error.response.data.message) {
+        setError(Error.response.data.message);
       } else {
-        setError("An error occurred while adding the note.");
+        setError("An Error occurred while adding the note.");
       }
     }
   };
@@ -36,9 +36,9 @@ const AddEditNotes = ({ notedata, getAllNotes, type, onclose }) => {
         getAllNotes();
         onclose();
       }
-    } catch (error) {
-      console.error("Error during edit note operation:", error);  // Log full error to inspect
-      setError("An error occurred while editing the note.");
+    } catch (Error) {
+      console.Error("Error during edit note operation:", Error);  // Log full Error to inspect
+      setError("An Error occurred while editing the note.");
     }
   };
 
@@ -53,7 +53,7 @@ const AddEditNotes = ({ notedata, getAllNotes, type, onclose }) => {
       return;
     }
 
-    setError(""); // Clear error if validation passes
+    setError(""); // Clear Error if validation passes
 
     if (type === "edit") {
       editNote();
@@ -92,7 +92,7 @@ const AddEditNotes = ({ notedata, getAllNotes, type, onclose }) => {
         />
       </div>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {Error && <p style={{ color: 'red' }}>{Error}</p>}
 
       <button type="button" className="btn btn-primary btn-set" onClick={handleAddNote}>
         {type === "edit" ? "Edit" : "Add"}

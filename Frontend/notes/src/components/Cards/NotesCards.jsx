@@ -1,7 +1,9 @@
 import React from 'react'
 import { MdDelete, MdEdit } from 'react-icons/md'
+import { useAppContext } from '../../context/AppContext'
 
 const NotesCards = ({ title, date, content, onEdit, onDelete, checkboxChecked, onCheckboxChange }) => {
+    
     return (
         <div>
             <div className="row">

@@ -148,13 +148,12 @@ app.post("/add-note", isAuthenticated, async (req, res) => {
 // Edit note
 app.put("/edit-note/:noteId", isAuthenticated, async (req, res) => {
     const noteId = req.params.noteId;
-    console.log(req.session.id)
     const { title, content, status } = req.body;
 
     if (!req.body) return res.status(400).json({ error: true, message: "No changes provided" });
     if (status) {
         try {
-            const note = await Note.findOneAndUpdate({ _id: noteId }, { status }, { new: true });
+            const note = await Note.findOneAndUpdate({ _id: noteId }, { status });
             if (!note) return res.status(404).json({ error: true, message: "Note not found!" });
             // console.log(note);
             note.status = status;

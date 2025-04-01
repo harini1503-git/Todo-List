@@ -9,7 +9,7 @@ const SignUp = () => {
   const [name, setname] = useState('');
   const [email, setemail] = useState('');
   const [password, setpassword] = useState('');
-  const [error, setError] = useState(null);
+  const [Error, setError] = useState(null);
 
   const navigate = useNavigate();
 
@@ -39,7 +39,7 @@ const SignUp = () => {
       });
       console.log(response);
       // Handling response from the backend
-      if (response.data && response.data.error) {
+      if (response.data && response.data.Error) {
         console.log("Inside response.data")
         setError(response.data.message);
         return;
@@ -51,12 +51,12 @@ const SignUp = () => {
         // Redirect to dashboard after successful signup
         navigate('/dashboard');
       }
-    } catch (error) {
-      // Handling unexpected errors
-      if (error.response && error.response.data && error.response.data.message) {
-        setError(error.response.data.message);
+    } catch (Error) {
+      // Handling unexpected Errors
+      if (Error.response && Error.response.data && Error.response.data.message) {
+        setError(Error.response.data.message);
       } else {
-        setError('An unexpected error occurred. Please try again.');
+        setError('An unexpected Error occurred. Please try again.');
       }
     }
   };
@@ -121,7 +121,7 @@ const SignUp = () => {
               />
             </div>
 
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {Error && <p style={{ color: 'red' }}>{Error}</p>}
 
             <div className='form-check'>
               <input

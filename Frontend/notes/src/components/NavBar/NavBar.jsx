@@ -3,8 +3,11 @@ import '../../index.css'
 import ProfileInfo from '../profile/ProfileInfo'
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from '../../utils/axiosInstance'
+import { useAppContext } from '../../context/AppContext'
 
-const NavBar = ({userinfo}) => {
+const NavBar = () => {
+
+    const {user}= useAppContext();
     
     const navigate= useNavigate();
     const OnLogout = () => {
@@ -16,8 +19,8 @@ const NavBar = ({userinfo}) => {
         <>
             <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-lg">
                 <div className="container-nav">
-                    <a className="navbar-brand" href="#">Todo - List</a>
-                    {userinfo && <ProfileInfo userinfo={userinfo} OnLogout={OnLogout} />}
+                    <a className="navbar-brand" href="/dashboard">Todo - List</a>
+                    {user && <ProfileInfo OnLogout={OnLogout} />}
                 </div>
             </nav>
         </>
