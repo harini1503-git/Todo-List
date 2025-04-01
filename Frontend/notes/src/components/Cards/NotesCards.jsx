@@ -1,7 +1,7 @@
 import React from 'react'
 import { MdDelete, MdEdit } from 'react-icons/md'
 
-const NotesCards = ({ title, date, content, onEdit, onDelete }) => {
+const NotesCards = ({ title, date, content, onEdit, onDelete, checkboxChecked, onCheckboxChange }) => {
     return (
         <div>
             <div className="row">
@@ -13,6 +13,18 @@ const NotesCards = ({ title, date, content, onEdit, onDelete }) => {
                             </div>
                             <span>{date}</span>
                             <p className="card-text">{content}</p>
+                            <div className="form-check">
+                                <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    checked={checkboxChecked}
+                                    onChange={onCheckboxChange} 
+                                />
+                                <label className="form-check-label">
+                                    Mark as done
+                                </label>
+                            </div>
+
                             <button type='submit' className="btn btn-primary"><MdEdit onClick={onEdit} /></button>
                             &nbsp; &nbsp;
                             <button type='submit' className="btn btn-danger"><MdDelete onClick={onDelete} /></button>

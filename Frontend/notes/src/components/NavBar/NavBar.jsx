@@ -2,18 +2,20 @@ import React, { useState } from 'react'
 import '../../index.css'
 import ProfileInfo from '../profile/ProfileInfo'
 import { useNavigate } from 'react-router-dom'
+import axiosInstance from '../../utils/axiosInstance'
 
 const NavBar = ({userinfo}) => {
     
     const navigate= useNavigate();
     const OnLogout = () => {
-        navigate("/login");
+        axiosInstance.post("/logout");
+        navigate('/login');
     }
 
     return (
         <>
             <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-lg">
-                <div className="container">
+                <div className="container-nav">
                     <a className="navbar-brand" href="#">Todo - List</a>
                     {userinfo && <ProfileInfo userinfo={userinfo} OnLogout={OnLogout} />}
                 </div>

@@ -1,48 +1,66 @@
 import React, { useState, useEffect } from 'react';
-import NavBar from '../../components/NavBar/NavBar';
-import NotesCards from '../../components/Cards/NotesCards';
-import { MdCreate, MdDelete } from 'react-icons/md';
-import AddEditNotes from './AddEditNotes';
+import { MdCreate } from 'react-icons/md';
 import Modal from 'react-modal';
-import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance';
-import moment from "moment";
+import moment from 'moment';
+import NotesCards from '../../components/Cards/NotesCards'; // Assuming NotesCard component exists
+import AddEditNotes from './AddEditNotes'
+import NavBar from '../../components/NavBar/NavBar';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
-  const [openAddEditModal, setOpenAddEditModal] = useState({ isShowen: false, type: "add", data: null });
-  const [user, setuser] = useState(null);
   const [AllNotes, setAllNotes] = useState([]);
+  const [openAddEditModal, setOpenAddEditModal] = useState({ isShowen: false, type: 'add', data: null });
+  const [user, setUser] = useState(null);
+  const [status, setStatus] = useState("pending");
+
   const navigate = useNavigate();
 
-  // Fetch user information
   const getUserInfo = async () => {
     try {
-      const response = await axiosInstance.get("/get-user");
+      console.log("inside getuserinfo")
+      const response = await axiosInstance.get('/get-user')
+        .then()
+        .catch(err => {
+          if (err.status === 404) navigate('/login');
+          else console.log(err.status);
+        });
+      // console.log(response.data);
       if (response.data && response.data.user) {
-        setuser(response.data.user);
+        setUser(response.data.user);
       }
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        navigate("/login");
-      } else {
-        console.error("Error fetching user info:", error);
-      }
+      console.error('Error fetching user info:', error);
     }
   };
 
-  // Fetch all notes
   const getAllNotes = async () => {
     try {
-      const response = await axiosInstance.get("/get-all-note");
+      const response = await axiosInstance.get('/get-all-note');
       if (response.data && response.data.notes) {
         setAllNotes(response.data.notes);
       }
     } catch (error) {
-      console.log("An unexpected error occurred. Please try again!");
+      console.log('An unexpected error occurred. Please try again!');
     }
   };
 
-  // Delete a note
+  const toggleTaskStatus = (noteId, currentStatus) => {
+    const newStatus = currentStatus === 'pending' ? 'done' : 'pending';
+
+
+    setAllNotes(prevNotes => {
+      const updatedNotes = prevNotes.map(note =>
+        note._id === noteId ? { ...note, status: newStatus } : note
+      );
+      console.log(updatedNotes);
+      return updatedNotes;  // Ensure we return the updated state array
+    });
+    console.log(AllNotes);
+    console.log(noteId)
+
+    axiosInstance.put(`/edit-note/${noteId}`, { status: newStatus });
+  };
   const deleteNote = async (data) => {
     const noteId = data._id;
     try {
@@ -64,7 +82,6 @@ const Home = () => {
     setOpenAddEditModal({ isShowen: true, data: noteDetails, type: "edit" });
   };
 
-  // Effect hook to fetch user info and all notes when the component mounts
   useEffect(() => {
     getUserInfo();
     getAllNotes();
@@ -73,44 +90,99 @@ const Home = () => {
   return (
     <>
       <NavBar userinfo={user} />
-      <h4>Notes Cards</h4>
-      <div className='container-main'>
-        {AllNotes.map((item) => (
-          <NotesCards
-            key={item._id}
-            title={item.title}
-            date={moment(item.createdOn).format('DD MMM YYYY')}
-            content={item.content}
-            onEdit={() => handleEdit(item)}
-            onDelete={() => deleteNote(item)}
-          />
-        ))}
+      <div className="container">
+        <h4>Notes</h4>
+
+        <ul className="nav nav-tabs" id="myTab" role="tablist">
+          <li className="nav-item" role="presentation">
+            <button
+              className="nav-link active"
+              id="pending-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#pending"
+              type="button"
+              role="tab"
+              onClick={() => setStatus("pending")}
+              aria-controls="pending"
+              aria-selected="true"
+            >
+              Pending
+            </button>
+          </li>
+          <li className="nav-item" role="presentation">
+            <button
+              className="nav-link"
+              id="done-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#done"
+              type="button"
+              role="tab"
+              onClick={() => setStatus("done")}
+              aria-controls="done"
+              aria-selected="false"
+            >
+              Task Done
+            </button>
+          </li>
+        </ul>
+
+        <div className="tab-content" id="myTabContent">
+          <div className="tab-pane fade show active" id="pending" role="tabpanel" aria-labelledby="pending-tab">
+            <div className="container-main">
+              {AllNotes.filter(note => note.status === status).map((item) => (
+                <NotesCards
+                  key={item._id}
+                  title={item.title}
+                  date={moment(item.createdOn).format('DD MMM YYYY')}
+                  content={item.content}
+                  checkboxChecked={status === 'done'}
+                  onCheckboxChange={() => { toggleTaskStatus(item._id, item.status) }}
+                  onEdit={() => handleEdit(item)}
+                  onDelete={() => deleteNote(item)}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* <div className="tab-pane fade" id="done" role="tabpanel" aria-labelledby="done-tab">
+            <div className="container-main">
+              {AllNotes.filter(note => note.status === 'done').map((item) => (
+                <NotesCards
+                  key={item._id}
+                  title={item.title}
+                  date={moment(item.createdOn).format('DD MMM YYYY')}
+                  content={item.content}
+                  checkboxChecked={item.status === 'done'}
+                  onCheckboxChange={() => toggleTaskStatus(item._id, item.status)}
+                />
+              ))}
+            </div>
+          </div> */}
+        </div>
+
+        <button
+          type="button"
+          className="btn btn-primary btn-circle btn-xl"
+          onClick={() => setOpenAddEditModal({ isShowen: true, type: 'add', data: null })}
+        >
+          <MdCreate size={30} />
+        </button>
       </div>
 
       <Modal
         isOpen={openAddEditModal.isShowen}
-        onRequestClose={() => setOpenAddEditModal({ isShowen: false, type: "add", data: null })}
-        style={{ overlay: { backgroundColor: "rgba(0,0,0,0.2)" } }}
+        onRequestClose={() => setOpenAddEditModal({ isShowen: false, type: 'add', data: null })}
+        style={{ overlay: { backgroundColor: 'rgba(0,0,0,0.2)' } }}
         contentLabel="Add or Edit Note"
         className="custom-class"
       >
         <AddEditNotes
-          onclose={() => {
-            setOpenAddEditModal({ isShowen: false, type: "add", data: null })}
-          }
+          onclose={() => setOpenAddEditModal({ isShowen: false, type: 'add', data: null })}
           type={openAddEditModal.type}
           notedata={openAddEditModal.data}
           getAllNotes={getAllNotes}
         />
       </Modal>
-
-      <button
-        type="button"
-        className="btn btn-primary btn-circle btn-xl"
-        onClick={() => setOpenAddEditModal({ isShowen: true, type: "add", data: null })}
-      >
-        <MdCreate size={30} />
-      </button>
     </>
   );
 };

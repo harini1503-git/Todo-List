@@ -73,6 +73,7 @@ nav {
 
 .container {
   display: flex;
+  flex-direction: column;
   justify-content: space-around;
   align-items: center;
 }
@@ -159,4 +160,8 @@ nav {
   margin-top: 3.5rem;
   padding: 1.25rem; 
   overflow-y: scroll;
+}
+.container-nav{
+  display: flex;
+  justify-content: space-between;
 }

@@ -5,6 +5,7 @@ const User = require("./models/usermodel");
 const Note = require("./models/notesmodel");
 const session = require('express-session');
 const cors = require('cors')
+const clearCookie= require('cookie');
 
 // Middleware to parse JSON data
 app.use(express.json());
@@ -14,7 +15,7 @@ app.use(cors({
 }));
 // Session setup
 app.use(session({
-    secret: process.env.SESSION_SECRET||'harinimudaliar', 
+    secret: process.env.SESSION_SECRET || 'harinimudaliar',
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -28,14 +29,14 @@ app.use(session({
 // MongoDB connection
 async function main() {
 
-//   await mongoose.connect("mongodb://localhost:27017/", { useNewUrlParser: true, useUnifiedTopology: true })
+    //   await mongoose.connect("mongodb://localhost:27017/", { useNewUrlParser: true, useUnifiedTopology: true })
     await mongoose.connect("mongodb+srv://harinimudaliar1503:harini@cluster0.2nj4eul.mongodb.net/mongodb?retryWrites=true&w=majority&appName=Cluster0")
-    .then(() => {
-        console.log('MongoDB connected successfully!');
-    })
-    .catch(err => {
-        console.error('MongoDB connection error:', err);
-    });
+        .then(() => {
+            console.log('MongoDB connected successfully!');
+        })
+        .catch(err => {
+            console.error('MongoDB connection error:', err);
+        });
 }
 main()
 
@@ -72,6 +73,7 @@ app.post("/create-account", async (req, res) => {
 app.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
+    console.log(email)
     if (!email) return res.status(400).json({ error: true, message: "Email is required!" });
     if (!password) return res.status(400).json({ error: true, message: "Password is required!" });
 
@@ -87,6 +89,22 @@ app.post("/login", async (req, res) => {
         return res.json({ error: true, message: "Invalid Credentials" });
     }
 });
+app.post("/logout", async (req, res) => {
+    try {
+        req.session.destroy((err) => {
+            if (err) {
+              return res.status(500).json({ message: 'Error while logging out' });
+            }
+        
+            // Optionally clear the cookie as well
+            res.clearCookie('connect.sid');  // This is the default session cookie name
+            res.status(200).json({ message: 'Logged out successfully' });
+            
+          });
+    } catch (err) {
+        return res.status(500).json({ error: true, message: "Internal Server Error" });
+    }
+})
 
 // Middleware to check user authentication
 const isAuthenticated = (req, res, next) => {
@@ -100,7 +118,7 @@ const isAuthenticated = (req, res, next) => {
 app.get("/get-user", isAuthenticated, async (req, res) => {
     const user = await User.findById(req.session.userId);
     if (!user) return res.status(404).json({ error: true, message: "User Not Found!" });
-    
+
     return res.json({
         user: { fullname: user.fullname, email: user.email, _id: user._id, createdOn: user.createdOn },
         message: "",
@@ -131,12 +149,25 @@ app.post("/add-note", isAuthenticated, async (req, res) => {
 app.put("/edit-note/:noteId", isAuthenticated, async (req, res) => {
     const noteId = req.params.noteId;
     console.log(req.session.id)
-    const { title, content } = req.body;
+    const { title, content, status } = req.body;
 
-    if (!title && !content) return res.status(400).json({ error: true, message: "No changes provided" });
+    if (!req.body) return res.status(400).json({ error: true, message: "No changes provided" });
+    if (status) {
+        try {
+            const note = await Note.findOneAndUpdate({ _id: noteId }, { status }, { new: true });
+            if (!note) return res.status(404).json({ error: true, message: "Note not found!" });
+            // console.log(note);
+            note.status = status;
+            console.log(note)
 
+            await note.save();
+            return res.json({ error: false, note, message: "Note Updated Successfully" });
+        } catch (error) {
+            return res.status(500).json({ error: true, message: "Internal Server Error" });
+        }
+    }
     try {
-        const note = await Note.findOneAndUpdate({ _id: noteId }, { title, content },{ new: true });
+        const note = await Note.findOneAndUpdate({ _id: noteId }, { title, content }, { new: true });
         if (!note) return res.status(404).json({ error: true, message: "Note not found!" });
         // console.log(note);
         if (title) note.title = title;
@@ -164,7 +195,7 @@ app.delete("/delete-note/:noteId", isAuthenticated, async (req, res) => {
     const noteId = req.params.noteId;
 
     try {
-        await Note.findOneAndDelete({ _id: noteId});
+        await Note.findOneAndDelete({ _id: noteId });
 
         // await Note.deleteOne({ _id: noteId, userId: req.session.id });
         return res.json({ error: false, message: "Note Deleted Successfully!" });
