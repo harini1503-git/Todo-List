@@ -7,9 +7,10 @@ import AddEditNotes from './AddEditNotes'
 import NavBar from '../../components/NavBar/NavBar';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
+import DraggableModal from '../../components/Draggable/DraggableModal';
 
 const Home = () => {
-  const { setUser,openAddEditModal, setOpenAddEditModal, AllNotes, setAllNotes, getAllNotes} = useAppContext();
+  const { setUser, openAddEditModal, setOpenAddEditModal, AllNotes, setAllNotes, getAllNotes } = useAppContext();
 
 
   const [status, setStatus] = useState("pending");
@@ -51,7 +52,7 @@ const Home = () => {
 
     axiosInstance.put(`/edit-note/${noteId}`, { status: newStatus });
   };
-  
+
 
   useEffect(() => {
     getUserInfo();
@@ -120,20 +121,8 @@ const Home = () => {
         </button>
       </div>
 
-      <Modal
-        isOpen={openAddEditModal.isShowen}
-        onRequestClose={() => setOpenAddEditModal({ isShowen: false, type: 'add', data: null })}
-        style={{ overlay: { backgroundColor: 'rgba(0,0,0,0.2)' } }}
-        contentLabel="Add or Edit Note"
-        className="custom-class"
-      >
-        <AddEditNotes
-          onclose={() => setOpenAddEditModal({ isShowen: false, type: 'add', data: null })}
-          type={openAddEditModal.type}
-          notedata={openAddEditModal.data}
-          getAllNotes={getAllNotes}
-        />
-      </Modal>
+      <DraggableModal/>
+      
     </>
   );
 };
