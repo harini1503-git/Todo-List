@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect} from "react";
+import React, { createContext, useState, useContext, useEffect, useRef} from "react";
 import axiosInstance from '../utils/axiosInstance';
 
 //Firstly i am creating Context
@@ -30,6 +30,7 @@ export const AppProvider = ({ children }) => {
     }, []);
 
     const deleteNote = async (data) => {
+        console.log("Inside Delete Note")
         const noteId = data._id;
         try {
             console.log("Inside Delete note frontend")
@@ -47,10 +48,14 @@ export const AppProvider = ({ children }) => {
 
     // Open modal for editing or adding a note
     const handleEdit = (noteDetails) => {
+        console.log(noteDetails)
+        console.log("Edit button is pressed")
         setOpenAddEditModal({ isShowen: true, data: noteDetails, type: "edit" });
     };
 
+    const modalRef = useRef();
+
     return (
-        <AppContext.Provider value={{ user, setUser, deleteNote, handleEdit, openAddEditModal, setOpenAddEditModal, AllNotes, setAllNotes, getAllNotes }}>{children}</AppContext.Provider>
+        <AppContext.Provider value={{ user, setUser, deleteNote, handleEdit, openAddEditModal, setOpenAddEditModal, AllNotes, setAllNotes, getAllNotes, modalRef }}>{children}</AppContext.Provider>
     )
 }

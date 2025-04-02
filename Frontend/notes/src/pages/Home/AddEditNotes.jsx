@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
-import { MdClose } from 'react-icons/md';
 import axiosInstance from '../../utils/axiosInstance';
 
-const AddEditNotes = ({ notedata, getAllNotes, type, onclose }) => {
+const AddEditNotes = ({ notedata, getAllNotes, type }) => {
   const [title, setTitle] = useState(notedata?.title || "");
   const [content, setContent] = useState(notedata?.content || "");
   const [Error, setError] = useState(null);
 
   // Add a new note (POST request)
   const addNewNote = async () => {
+    console.log("Inside ADD new note")
     try {
       const response = await axiosInstance.post("/add-note", { title, content });
       console.log(response);
       if (response.data && response.data.note) {
         getAllNotes();
-        onclose();
       }
     } catch (Error) {
       if (Error.response && Error.response.data && Error.response.data.message) {
@@ -27,6 +26,7 @@ const AddEditNotes = ({ notedata, getAllNotes, type, onclose }) => {
 
   // Edit an existing note (PUT request)
   const editNote = async () => {
+    console.log("Inside editnote");
     const noteId = notedata._id;
     // console.log(noteId);
     try {
@@ -34,7 +34,6 @@ const AddEditNotes = ({ notedata, getAllNotes, type, onclose }) => {
       console.log(response);
       if (response.data && response.data.note) {
         getAllNotes();
-        onclose();
       }
     } catch (Error) {
       console.Error("Error during edit note operation:", Error);  // Log full Error to inspect
@@ -44,6 +43,7 @@ const AddEditNotes = ({ notedata, getAllNotes, type, onclose }) => {
 
   // Handle adding or editing a note
   const handleAddNote = () => {
+    console.log("Inside Handle note")
     if (!title) {
       setError("Please add a title for your task.");
       return;
@@ -60,13 +60,12 @@ const AddEditNotes = ({ notedata, getAllNotes, type, onclose }) => {
     } else {
       addNewNote();
     }
+    setTitle("");
+    setContent("");
   };
 
   return (
     <div>
-      <button type="button" className="close" aria-label="Close" onClick={onclose}>
-        <MdClose />
-      </button>
 
       <div className="form-group">
         <label htmlFor="noteTitle">Title</label>
@@ -94,7 +93,7 @@ const AddEditNotes = ({ notedata, getAllNotes, type, onclose }) => {
 
       {Error && <p style={{ color: 'red' }}>{Error}</p>}
 
-      <button type="button" className="btn btn-primary btn-set" onClick={handleAddNote}>
+      <button type="button" className="btn btn-primary btn-set" data-dismiss="modal" onClick={()=>handleAddNote()}>
         {type === "edit" ? "Edit" : "Add"}
       </button>
     </div>

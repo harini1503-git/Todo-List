@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef} from 'react';
 import { MdCreate } from 'react-icons/md';
 import Modal from 'react-modal';
 import axiosInstance from '../../utils/axiosInstance';
@@ -7,10 +7,10 @@ import AddEditNotes from './AddEditNotes'
 import NavBar from '../../components/NavBar/NavBar';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
-import DraggableModal from '../../components/Draggable/DraggableModal';
+import Draggable from 'react-draggable';
 
 const Home = () => {
-  const { setUser, openAddEditModal, setOpenAddEditModal, AllNotes, setAllNotes, getAllNotes } = useAppContext();
+  const { setUser, openAddEditModal, setOpenAddEditModal, AllNotes, setAllNotes, getAllNotes, modalRef } = useAppContext();
 
 
   const [status, setStatus] = useState("pending");
@@ -115,14 +115,33 @@ const Home = () => {
         <button
           type="button"
           className="btn btn-primary btn-circle btn-xl"
-          onClick={() => setOpenAddEditModal({ isShowen: true, type: 'add', data: null })}
+          data-toggle="modal" data-target="#exampleModal"
         >
           <MdCreate size={30} />
         </button>
       </div>
 
-      <DraggableModal/>
-      
+      <Draggable nodeRef={modalRef}>
+        <div ref={modalRef} className="modal" id="exampleModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div className="modal-body">
+                <AddEditNotes
+                  type={openAddEditModal.type}
+                  notedata={openAddEditModal.data}
+                  getAllNotes={getAllNotes} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </Draggable>
+
     </>
   );
 };

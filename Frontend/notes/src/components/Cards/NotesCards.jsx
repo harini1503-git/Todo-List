@@ -1,11 +1,13 @@
-import React from 'react'
+import React, {useRef} from 'react'
 import { MdDelete, MdEdit } from 'react-icons/md'
 import { useAppContext } from '../../context/AppContext'
 import moment from 'moment';
+import Draggable from 'react-draggable';
+import AddEditNotes from '../../pages/Home/AddEditNotes';
 
 const NotesCards = ({ note, checkboxChecked, onCheckboxChange }) => {
-    const { handleEdit, deleteNote}= useAppContext();
-    
+    const { handleEdit, deleteNote, modalRef, openAddEditModal, getAllNotes} = useAppContext();
+
     return (
         <div>
             <div className="row">
@@ -22,22 +24,45 @@ const NotesCards = ({ note, checkboxChecked, onCheckboxChange }) => {
                                     className="form-check-input"
                                     type="checkbox"
                                     checked={checkboxChecked}
-                                    onChange={onCheckboxChange} 
+                                    onChange={onCheckboxChange}
                                 />
                                 <label className="form-check-label">
                                     Mark as done
                                 </label>
                             </div>
 
-                            <button type='submit' className="btn btn-primary"><MdEdit onClick={()=>handleEdit(note)} /></button>
+                            <button type='submit' className="btn btn-primary" data-toggle="modal" data-target="#exampleModal"><MdEdit onClick={() => handleEdit(note)} /></button>
                             &nbsp; &nbsp;
-                            <button type='submit' className="btn btn-danger"><MdDelete onClick={()=>deleteNote(note)} /></button>
+                            <button type='submit' className="btn btn-danger"><MdDelete onClick={() => deleteNote(note)} /></button>
 
                         </div>
                     </div>
                 </div>
 
             </div>
+
+
+            
+            <Draggable nodeRef={modalRef}>
+                <div ref={modalRef} className="modal" id="exampleModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div className="modal-dialog" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <AddEditNotes
+                                    type={openAddEditModal.type}
+                                    notedata={openAddEditModal.data}
+                                    getAllNotes={getAllNotes} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </Draggable>
         </div>
     )
 }

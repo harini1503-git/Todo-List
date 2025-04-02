@@ -160,14 +160,14 @@ nav {
   margin-top: 3.5rem;
   padding: 1.25rem; 
   overflow-y: scroll;
-  position: 'absolute';
-  background-color: '#fff';
-  border: '1px solid #ccc';
-  padding: 20px;
-  cursor: 'move'
+  
 }
 .container-nav{
   width: 100%;
   display: flex;
   justify-content: space-evenly;
+}
+
+.drag-div{
+  cursor: 'move'
 }
