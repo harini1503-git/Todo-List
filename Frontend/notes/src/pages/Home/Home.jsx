@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { MdCreate } from 'react-icons/md';
 import Modal from 'react-modal';
 import axiosInstance from '../../utils/axiosInstance';
-import moment from 'moment';
 import NotesCards from '../../components/Cards/NotesCards'; // Assuming NotesCard component exists
 import AddEditNotes from './AddEditNotes'
 import NavBar from '../../components/NavBar/NavBar';
@@ -10,10 +9,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
 
 const Home = () => {
-  const { setUser} = useAppContext();
+  const { setUser,openAddEditModal, setOpenAddEditModal, AllNotes, setAllNotes, getAllNotes} = useAppContext();
 
-  const [AllNotes, setAllNotes] = useState([]);
-  const [openAddEditModal, setOpenAddEditModal] = useState({ isShowen: false, type: 'add', data: null });
+
   const [status, setStatus] = useState("pending");
 
   const navigate = useNavigate();
@@ -36,16 +34,6 @@ const Home = () => {
     }
   };
 
-  const getAllNotes = async () => {
-    try {
-      const response = await axiosInstance.get('/get-all-note');
-      if (response.data && response.data.notes) {
-        setAllNotes(response.data.notes);
-      }
-    } catch (error) {
-      console.log('An unexpected error occurred. Please try again!');
-    }
-  };
 
   const toggleTaskStatus = (noteId, currentStatus) => {
     const newStatus = currentStatus === 'pending' ? 'done' : 'pending';
@@ -63,30 +51,10 @@ const Home = () => {
 
     axiosInstance.put(`/edit-note/${noteId}`, { status: newStatus });
   };
-  const deleteNote = async (data) => {
-    const noteId = data._id;
-    try {
-      console.log("Inside Delete note frontend")
-      const response = await axiosInstance.delete(`/delete-note/${noteId}`);
-      console.log(response);
-      if (response.data && !response.data.error) {
-        getAllNotes(); // Refresh notes list after deletion
-      }
-    } catch (error) {
-      if (error.response && error.response.data && error.response.data.message) {
-        console.log("An unexpected error occurred. Please try again!");
-      }
-    }
-  };
-
-  // Open modal for editing or adding a note
-  const handleEdit = (noteDetails) => {
-    setOpenAddEditModal({ isShowen: true, data: noteDetails, type: "edit" });
-  };
+  
 
   useEffect(() => {
     getUserInfo();
-    getAllNotes();
   }, []);
 
   return (
@@ -134,13 +102,9 @@ const Home = () => {
               {AllNotes.filter(note => note.status === status).map((item) => (
                 <NotesCards
                   key={item._id}
-                  title={item.title}
-                  date={moment(item.createdOn).format('DD MMM YYYY')}
-                  content={item.content}
                   checkboxChecked={status === 'done'}
                   onCheckboxChange={() => { toggleTaskStatus(item._id, item.status) }}
-                  onEdit={() => handleEdit(item)}
-                  onDelete={() => deleteNote(item)}
+                  note={item}
                 />
               ))}
             </div>

@@ -184,6 +184,7 @@ app.put("/edit-note/:noteId", isAuthenticated, async (req, res) => {
 app.get("/get-all-note", isAuthenticated, async (req, res) => {
     try {
         const notes = await Note.find({ userId: req.session.userId });
+        // console.log(notes);
         return res.json({ error: false, notes, message: "All notes retrieved successfully!" });
     } catch (error) {
         return res.status(500).json({ error: true, message: "Internal Server Error" });

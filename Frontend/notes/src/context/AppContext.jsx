@@ -1,4 +1,5 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect} from "react";
+import axiosInstance from '../utils/axiosInstance';
 
 //Firstly i am creating Context
 const AppContext = createContext();
@@ -9,7 +10,47 @@ export const useAppContext = () => useContext(AppContext);
 //creating Context provider
 export const AppProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [openAddEditModal, setOpenAddEditModal] = useState({ isShowen: false, type: 'add', data: null });
+    const [AllNotes, setAllNotes] = useState([]);
 
-return(
-    <AppContext.Provider value={{user, setUser}}>{children}</AppContext.Provider>
-)}
+    const getAllNotes = async () => {
+        try {
+            const response = await axiosInstance.get('/get-all-note');
+            console.log(response)
+            if (response.data && response.data.notes) {
+                setAllNotes(response.data.notes);
+            }
+        } catch (error) {
+            console.log('An unexpected error occurred. Please try again!');
+        }
+    };
+
+    useEffect(() => {
+        getAllNotes(); // Fetch notes when the component mounts
+    }, []);
+
+    const deleteNote = async (data) => {
+        const noteId = data._id;
+        try {
+            console.log("Inside Delete note frontend")
+            const response = await axiosInstance.delete(`/delete-note/${noteId}`);
+            console.log(response);
+            if (response.data && !response.data.error) {
+                getAllNotes(); // Refresh notes list after deletion
+            }
+        } catch (error) {
+            if (error.response && error.response.data && error.response.data.message) {
+                console.log("An unexpected error occurred. Please try again!");
+            }
+        }
+    };
+
+    // Open modal for editing or adding a note
+    const handleEdit = (noteDetails) => {
+        setOpenAddEditModal({ isShowen: true, data: noteDetails, type: "edit" });
+    };
+
+    return (
+        <AppContext.Provider value={{ user, setUser, deleteNote, handleEdit, openAddEditModal, setOpenAddEditModal, AllNotes, setAllNotes, getAllNotes }}>{children}</AppContext.Provider>
+    )
+}
